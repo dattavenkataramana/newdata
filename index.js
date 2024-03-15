@@ -40,14 +40,18 @@ app.get("/login1/", async (req, res) => {
 });
 
 
-app.post('/login1/', async (req, res) => {
+  app.post('/login1/', async (req, res) => {
     try {
       const { name, password } = req.body;
-      const addData = `INSERT INTO login1(name, password) VALUES(?, ?)`;
-      await db.run(addData, [name, password]);
-      res.status(201).send('User added successfully!');
+      const query = 'INSERT INTO login1(name, password) VALUES (?, ?)';
+      const result = await db.run(query, [name, password]);
+      if (result.lastID) {
+        res.status(200).send('Login successful!');
+      } else {
+        res.status(401).send('Failed to add user');
+      }
     } catch (error) {
-      console.error('Error adding user:', error);
-      res.status(500).send('Failed to add user!');
+      console.error('Error:', error);
+      res.status(500).send('Internal server error');
     }
   });
